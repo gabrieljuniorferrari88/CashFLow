@@ -1,4 +1,4 @@
-using CashFlow.Application.UseCase.Expenses;
+using CashFlow.Application.UseCases.Expenses;
 using CashFlow.Communication.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,9 @@ public class ExpensesController : ControllerBase
     public IActionResult Register([FromBody] RequestRegisterExpenseJson request)
     {
         var useCase = new RegisterExpenseUseCase();
+
         var response = useCase.Execute(request);
+
         return Created(string.Empty, response);
     }
 }
