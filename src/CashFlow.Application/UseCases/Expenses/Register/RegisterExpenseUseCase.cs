@@ -1,6 +1,7 @@
 using CashFlow.Communication.Requests;
 using CashFlow.Communication.Responses;
 using CashFlow.Domain.Entities;
+using CashFlow.Domain.Repositories;
 using CashFlow.Domain.Repositories.Expenses;
 using CashFlow.Exception.ExceptionsBase;
 
@@ -9,9 +10,13 @@ namespace CashFlow.Application.UseCases.Expenses.Register;
 public class RegisterExpenseUseCase : IRegisterExpenseUseCase
 {
     private readonly IExpensesRepository _repository;
-    public RegisterExpenseUseCase(IExpensesRepository repository)
+    private readonly IUnitOfWork _unitOfWork;
+    public RegisterExpenseUseCase(
+        IUnitOfWork unitOfWork,
+        IExpensesRepository repository)
     {
         _repository = repository;
+        _unitOfWork = unitOfWork;
     }
     
     public ResponseRegisteredExpenseJson Execute(RequestRegisterExpenseJson request)
@@ -28,7 +33,7 @@ public class RegisterExpenseUseCase : IRegisterExpenseUseCase
         };
         
         _repository.Add(entity);
-        //https://app.rocketseat.com.br/classroom/banco-de-dados-e-injecao-de-dependencia/group/injecao-de-dependencias-pra-banco-de-dados/lesson/configurando-injecao-de-dependencias-para-o-application
+        _unitOfWork.Commit();
 
         return new ResponseRegisteredExpenseJson();
     }
