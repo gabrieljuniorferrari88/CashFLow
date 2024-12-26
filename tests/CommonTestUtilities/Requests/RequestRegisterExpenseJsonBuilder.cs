@@ -5,9 +5,9 @@ using CashFlow.Communication.Requests;
 namespace CommonTestUtilities.Requests;
 public class RequestRegisterExpenseJsonBuilder
 {
-    public static RequestRegisterExpenseJson Build()
+    public static RequestExpenseJson Build()
     {
-        return new Faker<RequestRegisterExpenseJson>("pt_BR")
+        return new Faker<RequestExpenseJson>("pt_BR")
             .RuleFor(x => x.Title, faker => faker.Commerce.ProductName())
             .RuleFor(x => x.Description, faker => faker.Commerce.ProductDescription())
             .RuleFor(x => x.Date, faker => faker.Date.Past())

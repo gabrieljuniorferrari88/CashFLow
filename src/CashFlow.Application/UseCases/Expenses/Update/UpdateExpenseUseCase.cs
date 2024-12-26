@@ -1,41 +1,47 @@
 using AutoMapper;
+using CashFlow.Application.UseCases.Expenses.Register;
 using CashFlow.Communication.Requests;
-using CashFlow.Communication.Responses;
 using CashFlow.Domain.Entities;
-using CashFlow.Domain.Enums;
 using CashFlow.Domain.Repositories;
 using CashFlow.Domain.Repositories.Expenses;
+using CashFlow.Exception;
 using CashFlow.Exception.ExceptionsBase;
 
-namespace CashFlow.Application.UseCases.Expenses.Register;
+namespace CashFlow.Application.UseCases.Expenses.Update;
 
-public class RegisterExpenseUseCase : IRegisterExpenseUseCase
+public class UpdateExpenseUseCase : IUpdateExpenseUseCase
 {
-    private readonly IExpensesWriteOnlyRepository _repository;
+    private readonly IExpensesUpdateOnlyRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public RegisterExpenseUseCase(
-        IUnitOfWork unitOfWork,
-        IExpensesWriteOnlyRepository repository,
+
+    public UpdateExpenseUseCase(
+        IExpensesUpdateOnlyRepository repository,
+        IUnitOfWork unitOfWork, 
         IMapper mapper)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
-    
-    public async Task<ResponseRegisteredExpenseJson> Execute(RequestExpenseJson request)
+    public async Task Execute(int id, RequestExpenseJson request)
     {
         Validate(request);
 
-        var entity = _mapper.Map<Expense>(request);
+        var expense = await _repository.GetById(id);
+
+        if (expense is null)
+        {
+            throw new NotFoundException(ResourceErrorMessages.EXPENSE_NOT_FOUND);
+        }
+
+        _mapper.Map(request, expense);
         
-        await _repository.Add(entity);
+        _repository.Update(expense);
+
         await _unitOfWork.Commit();
-
-        return _mapper.Map<ResponseRegisteredExpenseJson>(entity);
     }
-
+    
     private void Validate(RequestExpenseJson request)
     {
         var validator = new ExpenseValidator();
