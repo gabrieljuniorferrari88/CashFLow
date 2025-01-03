@@ -6,4 +6,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CashFlow.Communication\CashFlow.Communication.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Reports\" />
+    </ItemGroup>
+
 </Project>
